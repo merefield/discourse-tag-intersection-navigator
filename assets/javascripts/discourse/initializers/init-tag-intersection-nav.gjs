@@ -31,12 +31,17 @@ export default {
             didReceiveAttrs() {
               super.didReceiveAttrs(...arguments);
 
-              if (this.mainTag === siteSettings.discourse_tag_intersection_navigator_all_word) {
+              if (
+                this.mainTag ===
+                siteSettings.discourse_tag_intersection_navigator_all_word
+              ) {
                 this.mainTag = null;
               }
 
               this.additionalTags = this.additionalTags?.filter(
-                (tag) => tag !== siteSettings.discourse_tag_intersection_navigator_all_word
+                (tag) =>
+                  tag !==
+                  siteSettings.discourse_tag_intersection_navigator_all_word
               );
 
               this.set(
@@ -48,11 +53,17 @@ export default {
             @action
             onChange(tags) {
               if (tags.length < 1) {
-                tags.push(siteSettings.discourse_tag_intersection_navigator_all_word);
-                tags.push(siteSettings.discourse_tag_intersection_navigator_all_word);
+                tags.push(
+                  siteSettings.discourse_tag_intersection_navigator_all_word
+                );
+                tags.push(
+                  siteSettings.discourse_tag_intersection_navigator_all_word
+                );
               }
               if (tags.length < 2) {
-                tags.push(siteSettings.discourse_tag_intersection_navigator_all_word);
+                tags.push(
+                  siteSettings.discourse_tag_intersection_navigator_all_word
+                );
               }
               DiscourseURL.routeTo(`/tags/intersection/${tags.join("/")}`);
             }
@@ -70,7 +81,11 @@ export default {
               set(
                 this.model,
                 "tags",
-                this.model.tags.filter((tag) => tag !== siteSettings.discourse_tag_intersection_navigator_all_word)
+                this.model.tags.filter(
+                  (tag) =>
+                    tag !==
+                    siteSettings.discourse_tag_intersection_navigator_all_word
+                )
               );
             }
           }
