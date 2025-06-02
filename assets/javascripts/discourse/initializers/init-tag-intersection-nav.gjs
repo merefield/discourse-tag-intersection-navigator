@@ -1,15 +1,12 @@
 import { action, set } from "@ember/object";
 import { addDiscoveryQueryParam } from "discourse/controllers/discovery/list";
 import { filterTypeForMode } from "discourse/lib/filter-mode";
-import getURL from "discourse/lib/get-url";
-import { helperContext, makeArray } from "discourse/lib/helpers";
+import { makeArray } from "discourse/lib/helpers";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { escape } from "discourse/lib/text";
+import PreloadStore from "discourse/lib/preload-store";
 import DiscourseURL from "discourse/lib/url";
 import { escapeExpression, setDefaultHomepage } from "discourse/lib/utilities";
-import User from "discourse/models/user";
-import I18n, { i18n } from "discourse-i18n";
-import discourseComputed from "discourse-common/utils/decorators";
+import Category from "discourse/models/category";
 import PermissionType from "discourse/models/permission-type";
 import {
   filterQueryParams,
@@ -24,7 +21,6 @@ export default {
   name: "tag-intersection-navigator",
 
   initialize(container) {
-    const mobileView = container.lookup("service:site").mobileView;
     const siteSettings = container.lookup("service:site-settings");
 
     withPluginApi("1.39.0", (api) => {
