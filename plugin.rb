@@ -1,14 +1,12 @@
 
 # frozen_string_literal: true
 # name: discourse-tag-intersection-navigator
-# about: Adds PMs to the tag topic list
-# version: 0.0.1
+# about: Improves the Tag Intersections experience allow you to specify no, one or many tags to filter by
+# version: 0.0.2
 # authors: merefield@gmail.com
 # url: https://github.com/merefield/discourse-tag-intersection-navigator
 
 enabled_site_setting :discourse_tag_intersection_navigator_enabled
-
-# register_asset 'stylesheets/common/tag-topic-list-common.scss'
 
 module ::DiscourseTagIntersectionNavigator
   PLUGIN_NAME = "discourse-tag-intersection-navigator".freeze

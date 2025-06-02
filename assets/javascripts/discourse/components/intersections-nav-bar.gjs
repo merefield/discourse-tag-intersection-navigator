@@ -8,9 +8,11 @@ import { service } from "@ember/service";
 import { eq } from "truth-helpers";
 
 const filters = ["Latest", "New", "Unread", "Unseen"];
+const filters_anon = ["Latest"];
 
 export default class IntersectionNavBarComponent extends Component {
   @service router;
+  @service currentUser;
   @controller("discovery/list") discoveryController;
 
   @tracked selected = "Latest";
@@ -30,7 +32,11 @@ export default class IntersectionNavBarComponent extends Component {
   }
 
   get filters() {
-    return filters;
+    if (this.currentUser) {
+      // If the user is logged in, show all filters
+      return filters;
+    }
+    return filters_anon;
   }
 
   isActive(filter) {
