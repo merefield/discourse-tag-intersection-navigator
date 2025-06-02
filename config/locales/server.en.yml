@@ -1,0 +1,6 @@
+en:
+  site_settings:
+    discourse_tag_intersection_navigator_enabled: "Enable tag intersection navigator extension"
+    discourse_tag_intersection_navigator_all_word: "Word used in routing to describe all tags - e.g. 'everything' - nust not be a tag!"
+    discourse_tag_intersection_navigator_make_intersection_homepage: "Make the tags intersection route the homepage"
+
