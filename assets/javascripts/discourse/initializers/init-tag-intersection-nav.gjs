@@ -22,7 +22,7 @@ export default {
 
   initialize(container) {
     const siteSettings = container.lookup("service:site-settings");
-    const isMobile = api.container.lookup("service:site").mobileView;
+    const isMobile = container.lookup("service:site").mobileView;
 
     withPluginApi("1.39.0", (api) => {
       api.modifyClass(
