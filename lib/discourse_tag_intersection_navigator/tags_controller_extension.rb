@@ -66,7 +66,7 @@ module DiscourseTagIntersectionNavigator
         params[:no_subcategories] == "true"
       options[:per_page] = params[:per_page].to_i.clamp(1, 30) if params[:per_page].present?
 
-      if params[:tag_id] == "none" || (params[:tag_id] == SiteSetting.discourse_tag_intersection_navigator_all_word && params[:additional_tag_ids] == SiteSetting.discourse_tag_intersection_navigator_all_word)
+      if params[:tag_id] == "none"
         options.delete(:tags)
         options[:no_tags] = true
       else
