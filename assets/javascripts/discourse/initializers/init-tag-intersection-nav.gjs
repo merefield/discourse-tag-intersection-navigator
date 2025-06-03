@@ -22,6 +22,7 @@ export default {
 
   initialize(container) {
     const siteSettings = container.lookup("service:site-settings");
+    const isMobile = api.container.lookup("service:site").mobileView;
 
     withPluginApi("1.39.0", (api) => {
       api.modifyClass(
@@ -245,7 +246,7 @@ export default {
       );
 
       if (
-        siteSettings.discourse_tag_intersection_navigator_make_intersection_homepage
+        !isMobile && siteSettings.discourse_tag_intersection_navigator_make_intersection_homepage
       ) {
         setDefaultHomepage(intersectionRoute);
       }
