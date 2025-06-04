@@ -105,13 +105,16 @@ export default {
           class extends Superclass {
             @action
             onChange(categoryId) {
-              if (this.tagId === siteSettings.discourse_tag_intersection_navigator_all_word) {
+              if (
+                this.tagId ===
+                siteSettings.discourse_tag_intersection_navigator_all_word
+              ) {
                 this.tagId = null;
               }
               super.onChange(categoryId);
             }
           }
-      )
+      );
 
       api.modifyClass(
         "route:tag-show",
@@ -260,7 +263,8 @@ export default {
       );
 
       if (
-        !isMobile && siteSettings.discourse_tag_intersection_navigator_make_intersection_homepage
+        !isMobile &&
+        siteSettings.discourse_tag_intersection_navigator_make_intersection_homepage
       ) {
         setDefaultHomepage(intersectionRoute);
       }
