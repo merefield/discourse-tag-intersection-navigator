@@ -271,6 +271,7 @@ export default {
       }
 
       if (
+        !isMobile &&
         siteSettings.discourse_tag_intersection_navigator_add_community_link
       ) {
         api.addCommunitySectionLink((baseSectionLink) => {
