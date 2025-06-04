@@ -3,3 +3,4 @@ en:
     discourse_tag_intersection_navigator_enabled: "Enable tag intersection navigator extension"
     discourse_tag_intersection_navigator_all_word: "Word used in routing to describe all tags - e.g. 'everything' - nust not be a tag!"
     discourse_tag_intersection_navigator_make_intersection_homepage: "Make the tags intersection route the homepage (Desktop only)"
+    discourse_tag_intersection_navigator_add_community_link: "Add a link to sidebar (or header dropdown) to the navigator"

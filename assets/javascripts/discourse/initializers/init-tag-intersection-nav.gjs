@@ -268,6 +268,37 @@ export default {
       ) {
         setDefaultHomepage(intersectionRoute);
       }
+
+      if (
+        siteSettings.discourse_tag_intersection_navigator_add_community_link
+      ) {
+        api.addCommunitySectionLink((baseSectionLink) => {
+          return class CustomSectionLink extends baseSectionLink {
+            get name() {
+              return "tag-intersection-navigator";
+            }
+
+            get route() {
+              return "tags.intersection";
+            }
+
+            get models() {
+              return [
+                siteSettings.discourse_tag_intersection_navigator_all_word,
+                siteSettings.discourse_tag_intersection_navigator_all_word,
+              ];
+            }
+
+            get title() {
+              return I18n.t("tag_intersection_navigator.link.title");
+            }
+
+            get text() {
+              return I18n.t("tag_intersection_navigator.link.text");
+            }
+          };
+        });
+      }
     });
   },
 };

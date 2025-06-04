@@ -2,3 +2,6 @@ en:
   js:
     tag_intersection_navigator:
       all_word: "everything"
+      link:
+        title: "Tag Intersection Navigator"
+        text : "Tag Navigator"

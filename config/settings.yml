@@ -7,3 +7,6 @@ plugins:
   discourse_tag_intersection_navigator_make_intersection_homepage:
     default: true
     client: true
+  discourse_tag_intersection_navigator_add_community_link:
+    default: true
+    client: true
