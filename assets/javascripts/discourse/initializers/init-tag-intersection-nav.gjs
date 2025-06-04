@@ -12,6 +12,7 @@ import {
   filterQueryParams,
   findTopicList,
 } from "discourse/routes/build-topic-route";
+import I18n from "discourse-i18n";
 
 const intersectionRoute = "tags/intersection/everything/everything";
 const NONE = "none";
