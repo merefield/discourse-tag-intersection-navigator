@@ -6,9 +6,15 @@ import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import { eq } from "truth-helpers";
+import I18n from "discourse-i18n";
 
-const filters = ["Latest", "New", "Unread", "Unseen"];
-const filters_anon = ["Latest"];
+const filters = [
+  I18n.t("filters.latest.title"),
+  I18n.t("filters.new.title"),
+  I18n.t("filters.unread.title"),
+  I18n.t("filters.unseen.title"),
+];
+const filters_anon = [I18n.t("filters.latest.title")];
 
 export default class IntersectionNavBarComponent extends Component {
   @service router;
