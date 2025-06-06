@@ -8,7 +8,7 @@ RSpec.describe "Tag Intersection Navigator" do
   fab!(:tag_1) { Fabricate(:tag, name: "test-tag1") }
   fab!(:tag_2) { Fabricate(:tag,  name: "test-tag2") }
   fab!(:tag_3) { Fabricate(:tag, name: "test-tag3") }
-  fab!(:topic) { Fabricate(:topic ) }
+  fab!(:topic)
   fab!(:topic_1) { Fabricate(:topic, tags: [tag_1]) }
   fab!(:topic_2) { Fabricate(:topic, tags: [tag_1, tag_2]) }
   fab!(:topic_3) { Fabricate(:topic, tags: [tag_1, tag_2, tag_3]) }
