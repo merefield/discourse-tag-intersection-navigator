@@ -105,7 +105,7 @@ export default {
               }
               return [];
             };
-getTagIntersectionUrl(category, tag_1, tag_2, filter) {
+            getTagIntersectionUrl(category, tag_1, tag_2, filter) {
               let url = `/tags/intersection/${tag_1}/${tag_2}`;
               let params = [];
 
@@ -120,8 +120,6 @@ getTagIntersectionUrl(category, tag_1, tag_2, filter) {
               }
               return getURL(url || "/");
             }
-
-
 
             @action
             onChange(categoryId) {
