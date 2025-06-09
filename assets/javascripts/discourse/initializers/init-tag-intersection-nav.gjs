@@ -27,7 +27,7 @@ export default {
   initialize(container) {
     const siteSettings = container.lookup("service:site-settings");
     const isMobile = container.lookup("service:site").mobileView;
-    const allWord = siteSettings.discourse_tag_intersection_navigator_allWord;
+    const allWord = siteSettings.discourse_tag_intersection_navigator_all_word;
     const intersectionRoute = `tags/intersection/${allWord}/${allWord}`;
 
     withPluginApi("1.39.0", (api) => {
@@ -73,7 +73,7 @@ export default {
             // Given a potential instance and options, set the model for this composer.
             async _setModel(optionalComposerModel, opts) {
               await super._setModel(optionalComposerModel, opts);
-              //remove the "allWord" as a tag from the composer because it is not a real tag
+              //remove the "all word" as a tag from the composer because it is not a real tag
               set(
                 this.model,
                 "tags",
