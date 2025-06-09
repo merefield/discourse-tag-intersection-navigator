@@ -1,6 +1,8 @@
 import { action, set } from "@ember/object";
+import { service } from "@ember/service";
 import { addDiscoveryQueryParam } from "discourse/controllers/discovery/list";
 import { filterTypeForMode } from "discourse/lib/filter-mode";
+import getURL from "discourse/lib/get-url";
 import { makeArray } from "discourse/lib/helpers";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import PreloadStore from "discourse/lib/preload-store";
@@ -13,9 +15,6 @@ import {
   findTopicList,
 } from "discourse/routes/build-topic-route";
 import I18n from "discourse-i18n";
-import { getCategoryAndTagUrl, getEditCategoryUrl } from "discourse/lib/url";
-import { service } from "@ember/service";
-import getURL from "discourse/lib/get-url";
 
 export default {
   name: "tag-intersection-navigator",
@@ -97,7 +96,16 @@ export default {
           class extends Superclass {
             @service router;
 
-            getTagIntersectionUrl(category, tag_1, tag_2, filter) {
+            getAdditionalTags = () => {
+              // Get the additional tags from the URL
+              const additionalTags =
+                this.router.currentRoute.params.additional_tags;
+              if (additionalTags) {
+                return additionalTags.split("/").map((t) => t);
+              }
+              return [];
+            };
+getTagIntersectionUrl(category, tag_1, tag_2, filter) {
               let url = `/tags/intersection/${tag_1}/${tag_2}`;
               let params = [];
 
@@ -113,15 +121,7 @@ export default {
               return getURL(url || "/");
             }
 
-            getAdditionalTags = () => {
-              // Get the additional tags from the URL
-              const additionalTags =
-                this.router.currentRoute.params.additional_tags;
-              if (additionalTags) {
-                return additionalTags.split("/").map((t) => t);
-              }
-              return [];
-            };
+
 
             @action
             onChange(categoryId) {
