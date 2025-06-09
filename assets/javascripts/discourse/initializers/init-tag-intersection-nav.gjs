@@ -13,6 +13,9 @@ import {
   findTopicList,
 } from "discourse/routes/build-topic-route";
 import I18n from "discourse-i18n";
+import { getCategoryAndTagUrl, getEditCategoryUrl } from "discourse/lib/url";
+import { service } from "@ember/service";
+import getURL from "discourse/lib/get-url";
 
 export default {
   name: "tag-intersection-navigator",
@@ -25,6 +28,8 @@ export default {
     const intersectionRoute = `tags/intersection/${ALL_WORD}/${ALL_WORD}`;
     const NONE = "none";
     const ALL = "all";
+    const NO_CATEGORIES_ID = "no-categories";
+    const ALL_CATEGORIES_ID = "all-categories";
 
     withPluginApi("1.39.0", (api) => {
       api.modifyClass(
@@ -90,12 +95,57 @@ export default {
         "component:category-drop",
         (Superclass) =>
           class extends Superclass {
+            @service router;
+
+            getTagIntersectionUrl(category, tag_1, tag_2, filter) {
+              let url = `/tags/intersection/${tag_1}/${tag_2}`;
+              let params = [];
+
+              if (filter) {
+                params.push(`int_filter=${filter}`);
+              }
+              if (category) {
+                params.push(`category=${category}`);
+              }
+              if (params.length > 0) {
+                url = url + "?" + params.join("&");
+              }
+              return getURL(url || "/");
+            }
+
+            getAdditionalTags = () => {
+              // Get the additional tags from the URL
+              const additionalTags =
+                this.router.currentRoute.params.additional_tags;
+              if (additionalTags) {
+                return additionalTags.split("/").map((t) => t);
+              }
+              return [];
+            };
+
             @action
             onChange(categoryId) {
               if (this.tagId === ALL_WORD) {
                 this.tagId = null;
               }
-              super.onChange(categoryId);
+              const category =
+                categoryId === ALL_CATEGORIES_ID ||
+                categoryId === NO_CATEGORIES_ID
+                  ? this.selectKit.options.parentCategory
+                  : Category.findById(parseInt(categoryId, 10));
+
+              if (this.router.currentRouteName === "tags.intersection") {
+                let route = this.getTagIntersectionUrl(
+                  category.slug,
+                  this.tagId,
+                  this.router.currentRoute.params.additional_tags,
+                  this.navMode
+                );
+                DiscourseURL.routeToUrl(route);
+                this.router.refresh();
+              } else {
+                super.onChange(categoryId);
+              }
             }
           }
       );
