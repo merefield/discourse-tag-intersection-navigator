@@ -11,7 +11,7 @@ RSpec.describe "Tag Intersection Navigator" do
   fab!(:category)
   fab!(:topic)
   fab!(:topic_1) { Fabricate(:topic, tags: [tag_1]) }
-  fab!(:topic_2) { Fabricate(:topic, tags: [tag_1, tag_2]), category: category }
+  fab!(:topic_2) { Fabricate(:topic, tags: [tag_1, tag_2], category: category) }
   fab!(:topic_3) { Fabricate(:topic, tags: [tag_1, tag_2, tag_3]) }
 
   before do
