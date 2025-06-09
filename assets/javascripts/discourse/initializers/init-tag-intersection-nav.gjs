@@ -14,16 +14,17 @@ import {
 } from "discourse/routes/build-topic-route";
 import I18n from "discourse-i18n";
 
-const intersectionRoute = "tags/intersection/everything/everything";
-const NONE = "none";
-const ALL = "all";
-
 export default {
   name: "tag-intersection-navigator",
 
   initialize(container) {
     const siteSettings = container.lookup("service:site-settings");
     const isMobile = container.lookup("service:site").mobileView;
+
+    const ALL_WORD = siteSettings.discourse_tag_intersection_navigator_all_word;
+    const intersectionRoute = `tags/intersection/${ALL_WORD}/${ALL_WORD}`;
+    const NONE = "none";
+    const ALL = "all";
 
     withPluginApi("1.39.0", (api) => {
       api.modifyClass(
@@ -33,17 +34,12 @@ export default {
             didReceiveAttrs() {
               super.didReceiveAttrs(...arguments);
 
-              if (
-                this.mainTag ===
-                siteSettings.discourse_tag_intersection_navigator_all_word
-              ) {
+              if (this.mainTag === ALL_WORD) {
                 this.mainTag = null;
               }
 
               this.additionalTags = this.additionalTags?.filter(
-                (tag) =>
-                  tag !==
-                  siteSettings.discourse_tag_intersection_navigator_all_word
+                (tag) => tag !== ALL_WORD
               );
 
               this.set(
@@ -55,17 +51,11 @@ export default {
             @action
             onChange(tags) {
               if (tags.length < 1) {
-                tags.push(
-                  siteSettings.discourse_tag_intersection_navigator_all_word
-                );
-                tags.push(
-                  siteSettings.discourse_tag_intersection_navigator_all_word
-                );
+                tags.push(ALL_WORD);
+                tags.push(ALL_WORD);
               }
               if (tags.length < 2) {
-                tags.push(
-                  siteSettings.discourse_tag_intersection_navigator_all_word
-                );
+                tags.push(ALL_WORD);
               }
               DiscourseURL.routeTo(`/tags/intersection/${tags.join("/")}`);
             }
@@ -83,11 +73,7 @@ export default {
               set(
                 this.model,
                 "tags",
-                this.model.tags.filter(
-                  (tag) =>
-                    tag !==
-                    siteSettings.discourse_tag_intersection_navigator_all_word
-                )
+                this.model.tags.filter((tag) => tag !== ALL_WORD)
               );
             }
           }
@@ -106,10 +92,7 @@ export default {
           class extends Superclass {
             @action
             onChange(categoryId) {
-              if (
-                this.tagId ===
-                siteSettings.discourse_tag_intersection_navigator_all_word
-              ) {
+              if (this.tagId === ALL_WORD) {
                 this.tagId = null;
               }
               super.onChange(categoryId);
@@ -285,10 +268,7 @@ export default {
             }
 
             get models() {
-              return [
-                siteSettings.discourse_tag_intersection_navigator_all_word,
-                siteSettings.discourse_tag_intersection_navigator_all_word,
-              ];
+              return [ALL_WORD, ALL_WORD];
             }
 
             get title() {
