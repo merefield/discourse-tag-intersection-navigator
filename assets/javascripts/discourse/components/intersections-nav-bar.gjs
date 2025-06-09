@@ -10,11 +10,18 @@ import I18n from "discourse-i18n";
 
 const filters = [
   I18n.t("filters.latest.title"),
+  I18n.t("filters.top.title"),
+  I18n.t("filters.hot.title"),
   I18n.t("filters.new.title"),
   I18n.t("filters.unread.title"),
   I18n.t("filters.unseen.title"),
 ];
-const filters_anon = [I18n.t("filters.latest.title")];
+
+const filters_anon = [
+  I18n.t("filters.latest.title"),
+  I18n.t("filters.top.title"),
+  I18n.t("filters.hot.title"),
+];
 
 export default class IntersectionNavBarComponent extends Component {
   @service router;
