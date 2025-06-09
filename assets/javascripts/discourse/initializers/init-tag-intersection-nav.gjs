@@ -16,19 +16,19 @@ import {
 } from "discourse/routes/build-topic-route";
 import I18n from "discourse-i18n";
 
+const NONE = "none";
+const ALL = "all";
+const NO_CATEGORIES_ID = "no-categories";
+const ALL_CATEGORIES_ID = "all-categories";
+
 export default {
   name: "tag-intersection-navigator",
 
   initialize(container) {
     const siteSettings = container.lookup("service:site-settings");
     const isMobile = container.lookup("service:site").mobileView;
-
-    const ALL_WORD = siteSettings.discourse_tag_intersection_navigator_all_word;
-    const intersectionRoute = `tags/intersection/${ALL_WORD}/${ALL_WORD}`;
-    const NONE = "none";
-    const ALL = "all";
-    const NO_CATEGORIES_ID = "no-categories";
-    const ALL_CATEGORIES_ID = "all-categories";
+    const allWord = siteSettings.discourse_tag_intersection_navigator_allWord;
+    const intersectionRoute = `tags/intersection/${allWord}/${allWord}`;
 
     withPluginApi("1.39.0", (api) => {
       api.modifyClass(
@@ -38,12 +38,12 @@ export default {
             didReceiveAttrs() {
               super.didReceiveAttrs(...arguments);
 
-              if (this.mainTag === ALL_WORD) {
+              if (this.mainTag === allWord) {
                 this.mainTag = null;
               }
 
               this.additionalTags = this.additionalTags?.filter(
-                (tag) => tag !== ALL_WORD
+                (tag) => tag !== allWord
               );
 
               this.set(
@@ -55,11 +55,11 @@ export default {
             @action
             onChange(tags) {
               if (tags.length < 1) {
-                tags.push(ALL_WORD);
-                tags.push(ALL_WORD);
+                tags.push(allWord);
+                tags.push(allWord);
               }
               if (tags.length < 2) {
-                tags.push(ALL_WORD);
+                tags.push(allWord);
               }
               DiscourseURL.routeTo(`/tags/intersection/${tags.join("/")}`);
             }
@@ -73,11 +73,11 @@ export default {
             // Given a potential instance and options, set the model for this composer.
             async _setModel(optionalComposerModel, opts) {
               await super._setModel(optionalComposerModel, opts);
-              //remove the "all_word" as a tag from the composer because it is not a real tag
+              //remove the "allWord" as a tag from the composer because it is not a real tag
               set(
                 this.model,
                 "tags",
-                this.model.tags.filter((tag) => tag !== ALL_WORD)
+                this.model.tags.filter((tag) => tag !== allWord)
               );
             }
           }
@@ -123,7 +123,7 @@ export default {
 
             @action
             onChange(categoryId) {
-              if (this.tagId === ALL_WORD) {
+              if (this.tagId === allWord) {
                 this.tagId = null;
               }
               const category =
@@ -316,7 +316,7 @@ export default {
             }
 
             get models() {
-              return [ALL_WORD, ALL_WORD];
+              return [allWord, allWord];
             }
 
             get title() {
