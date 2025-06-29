@@ -23,6 +23,9 @@ RSpec.describe "Tag Intersection Navigator" do
   describe "topic list results" do
     it "filters topics by tags as expected" do
       visit("/tags/intersection/bananas/bananas")
+      within("details.mini-tag-chooser span.formatted-selection") do
+        expect(page).to have_text("optional tags")
+      end
       expect(page).to have_current_path("/tags/intersection/bananas/bananas")
       expect(discovery.topic_list).to have_topic(topic)
       expect(discovery.topic_list).to have_topic(topic_1)
