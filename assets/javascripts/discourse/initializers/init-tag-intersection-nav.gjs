@@ -35,6 +35,24 @@ export default {
         "component:tags-intersection-chooser",
         (Superclass) =>
           class extends Superclass {
+            @service router;
+
+            getTagIntersectionUrl(category, tag_1, tag_2, filter) {
+              let url = `/tags/intersection/${tag_1}/${tag_2}`;
+              let params = [];
+
+              if (filter) {
+                params.push(`int_filter=${filter}`);
+              }
+              if (category) {
+                params.push(`category=${category}`);
+              }
+              if (params.length > 0) {
+                url = url + "?" + params.join("&");
+              }
+              return getURL(url || "/");
+            }
+
             didReceiveAttrs() {
               super.didReceiveAttrs(...arguments);
 
@@ -61,7 +79,14 @@ export default {
               if (tags.length < 2) {
                 tags.push(allWord);
               }
-              DiscourseURL.routeTo(`/tags/intersection/${tags.join("/")}`);
+
+              let route = this.getTagIntersectionUrl(
+                this.router.currentRoute.queryParams.category,
+                tags[0],
+                tags.slice(1),
+                this.navMode
+              );
+              DiscourseURL.routeToUrl(route);
             }
           }
       );
@@ -123,9 +148,6 @@ export default {
 
             @action
             onChange(categoryId) {
-              if (this.tagId === allWord) {
-                this.tagId = null;
-              }
               const category =
                 categoryId === ALL_CATEGORIES_ID ||
                 categoryId === NO_CATEGORIES_ID
