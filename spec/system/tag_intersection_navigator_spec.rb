@@ -45,6 +45,10 @@ RSpec.describe "Tag Intersection Navigator" do
       expect(discovery.topic_list).to have_topics(count: 2)
     end
     it "filters topics by tags and category as expected" do
+      visit("/tags/intersection/bananas/bananas?category=#{category.id}")
+      within("details.mini-tag-chooser span.formatted-selection") do
+        expect(page).to have_text("optional tags")
+      end
       visit("/tags/intersection/test-tag1/test-tag2?category=#{category.id}")
       expect(page).to have_current_path("/tags/intersection/test-tag1/test-tag2?category=#{category.id}")
       expect(discovery.topic_list).to have_topic(topic_2)
