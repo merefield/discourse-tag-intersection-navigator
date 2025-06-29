@@ -85,7 +85,7 @@ export default {
                 tags[0],
                 tags.slice(1),
                 this.navMode
-                );
+              );
               DiscourseURL.routeToUrl(route);
             }
           }
