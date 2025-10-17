@@ -171,7 +171,7 @@ export default {
       );
 
       api.modifyClass(
-        "route:tag-show",
+        "route:tag.show",
         (Superclass) =>
           class extends Superclass {
             async model(params, transition) {
@@ -305,7 +305,7 @@ export default {
       );
 
       api.modifyClass(
-        "route:tags-intersection",
+        "route:tags.intersection",
         (Superclass) =>
           class extends Superclass {
             get navMode() {
