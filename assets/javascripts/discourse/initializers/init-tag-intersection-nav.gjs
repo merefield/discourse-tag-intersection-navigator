@@ -26,9 +26,8 @@ export default {
 
   initialize(container) {
     const siteSettings = container.lookup("service:site-settings");
-    const isMobile = container.lookup("service:site").mobileView;
-    //const capabilities = container.lookup("service:capabilities");
-    //const isMobile = !this.capabilities.viewport.sm;
+    const capabilities = container.lookup("service:capabilities");
+    const isMobile = !capabilities.viewport.sm;
     const allWord = siteSettings.discourse_tag_intersection_navigator_all_word;
     const intersectionRoute = `tags/intersection/${allWord}/${allWord}`;
 
