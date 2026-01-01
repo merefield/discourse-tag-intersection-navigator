@@ -70,8 +70,8 @@ export default class IntersectionNavBarComponent extends Component {
 
     this.router.transitionTo(
       "tags.intersection",
-      this.args.tagId,
-      this.args.additionalTagIds.join("/"),
+      this.args.tagName,
+      this.args.additionaltagNames.join("/"),
       {
         queryParams: { int_filter: filter.toLowerCase() },
       }
