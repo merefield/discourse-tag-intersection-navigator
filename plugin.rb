@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 # name: discourse-tag-intersection-navigator
 # about: Improves the Tag Intersections experience allow you to specify no, one or many tags to filter by
-# version: 0.1.0
+# version: 0.1.1
 # authors: merefield@gmail.com
 # url: https://github.com/merefield/discourse-tag-intersection-navigator
 
