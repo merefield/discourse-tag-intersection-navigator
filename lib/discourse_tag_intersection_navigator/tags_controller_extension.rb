@@ -13,10 +13,10 @@ module DiscourseTagIntersectionNavigator
 
     Discourse.filters.each do |filter|
       define_method("show_#{filter}") do
-        unless params[:tag_id] == SiteSetting.discourse_tag_intersection_navigator_all_word && params[:additional_tag_ids] == SiteSetting.discourse_tag_intersection_navigator_all_word
-          @tag_id = params[:tag_id].force_encoding("UTF-8")
+        unless params[:tag_name] == SiteSetting.discourse_tag_intersection_navigator_all_word && params[:additional_tag_names] == SiteSetting.discourse_tag_intersection_navigator_all_word
+          @tag_name = params[:tag_name].force_encoding("UTF-8")
           @additional_tags =
-            params[:additional_tag_ids].to_s.split("/").map { |t| t.force_encoding("UTF-8") }
+            params[:additional_tag_names].to_s.split("/").map { |t| t.force_encoding("UTF-8") }
         end
 
         list_opts = build_topic_list_options
@@ -38,7 +38,7 @@ module DiscourseTagIntersectionNavigator
         @description_meta = I18n.t("rss_by_tag", tag: tag_params.join(" & "))
         @title = @description_meta
 
-        canonical_params = params.slice(:category_slug_path_with_id, :tag_id)
+        canonical_params = params.slice(:category_slug_path_with_id, :tag_name)
         canonical_method = url_method(canonical_params)
         canonical_url "#{Discourse.base_url_no_prefix}#{public_send(canonical_method, *(canonical_params.values.map { |t| t.force_encoding("UTF-8") }))}"
 
@@ -66,7 +66,7 @@ module DiscourseTagIntersectionNavigator
         params[:no_subcategories] == "true"
       options[:per_page] = params[:per_page].to_i.clamp(1, 30) if params[:per_page].present?
 
-      if params[:tag_id] == "none"
+      if params[:tag_name] == "none"
         options.delete(:tags)
         options[:no_tags] = true
       else

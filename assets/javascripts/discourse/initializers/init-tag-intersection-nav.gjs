@@ -26,8 +26,6 @@ export default {
 
   initialize(container) {
     const siteSettings = container.lookup("service:site-settings");
-    const capabilities = container.lookup("service:capabilities");
-    const isMobile = !capabilities.viewport.sm;
     const allWord = siteSettings.discourse_tag_intersection_navigator_all_word;
     const intersectionRoute = `tags/intersection/${allWord}/${allWord}`;
 
@@ -158,7 +156,7 @@ export default {
               if (this.router.currentRouteName === "tags.intersection") {
                 let route = this.getTagIntersectionUrl(
                   category.slug,
-                  this.tagId,
+                  this.tag.name,
                   this.router.currentRoute.params.additional_tags,
                   this.navMode
                 );
@@ -176,20 +174,20 @@ export default {
         (Superclass) =>
           class extends Superclass {
             async model(params, transition) {
-              const tagIdFromParams = escapeExpression(params.tag_id);
+              const tagNameFromParams = escapeExpression(params.tag_name);
               let tag;
-              if (tagIdFromParams !== NONE) {
+              if (tagNameFromParams !== NONE) {
                 tag = this.store.createRecord("tag", {
-                  id: tagIdFromParams,
+                  name: tagNameFromParams,
                 });
               } else {
                 tag = this.store.createRecord("tag", {
-                  id: NONE,
+                  name: NONE,
                 });
               }
 
-              if (tag.id !== tagIdFromParams) {
-                tag.set("id", tagIdFromParams);
+              if (tag.name !== tagNameFromParams) {
+                tag.set("name", tagNameFromParams);
               }
 
               let additionalTags;
@@ -197,8 +195,8 @@ export default {
               if (params.additional_tags) {
                 additionalTags = params.additional_tags.split("/").map((t) => {
                   return this.store.createRecord("tag", {
-                    id: escapeExpression(t),
-                  }).id;
+                    name: escapeExpression(t),
+                  }).name;
                 });
               }
 
@@ -207,14 +205,14 @@ export default {
               let tagNotification;
               if (
                 tag &&
-                tag.id !== NONE &&
+                tag.name !== NONE &&
                 this.currentUser &&
                 !additionalTags
               ) {
                 // If logged in, we should get the tag's user settings
                 tagNotification = await this.store.find(
                   "tagNotification",
-                  tag.id.toLowerCase()
+                  tag.name.toLowerCase()
                 );
               }
 
@@ -228,7 +226,7 @@ export default {
                 {}
               );
               const topicFilter = this.navMode;
-              const tagId = tag ? tag.id.toLowerCase() : NONE;
+              const tagName = tag ? tag.name.toLowerCase() : NONE;
               let filter;
 
               if (category) {
@@ -239,9 +237,9 @@ export default {
                   filter += this.noSubcategories ? `/${NONE}` : `/${ALL}`;
                 }
 
-                filter += `/${tagId}/l/${topicFilter}`;
+                filter += `/${tagName}/l/${topicFilter}`;
               } else if (additionalTags) {
-                filter = `tags/intersection/${tagId}/${additionalTags.join(
+                filter = `tags/intersection/${tagName}/${additionalTags.join(
                   "/"
                 )}`;
 
@@ -253,7 +251,7 @@ export default {
                   );
                 }
               } else {
-                filter = `tag/${tagId}/l/${topicFilter}`;
+                filter = `tag/${tagName}/l/${topicFilter}`;
               }
 
               if (
@@ -266,7 +264,7 @@ export default {
                 return this.router.replaceWith(
                   "tags.showCategoryNone",
                   params.category_slug_path_with_id,
-                  tagId
+                  tagName
                 );
               }
 
@@ -283,7 +281,7 @@ export default {
               if (list.topic_list.tags && list.topic_list.tags.length === 1) {
                 // Update name of tag (case might be different)
                 tag.setProperties({
-                  id: list.topic_list.tags[0].name,
+                  name: list.topic_list.tags[0].name,
                   staff: list.topic_list.tags[0].staff,
                 });
               }
@@ -318,14 +316,12 @@ export default {
       );
 
       if (
-        !isMobile &&
         siteSettings.discourse_tag_intersection_navigator_make_intersection_homepage
       ) {
         setDefaultHomepage(intersectionRoute);
       }
 
       if (
-        !isMobile &&
         siteSettings.discourse_tag_intersection_navigator_add_community_link
       ) {
         api.addCommunitySectionLink((baseSectionLink) => {
