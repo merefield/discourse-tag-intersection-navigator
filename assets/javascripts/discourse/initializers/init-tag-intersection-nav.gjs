@@ -26,8 +26,6 @@ export default {
 
   initialize(container) {
     const siteSettings = container.lookup("service:site-settings");
-    const capabilities = container.lookup("service:capabilities");
-    const isMobile = !capabilities.viewport.sm;
     const allWord = siteSettings.discourse_tag_intersection_navigator_all_word;
     const intersectionRoute = `tags/intersection/${allWord}/${allWord}`;
 
@@ -318,14 +316,12 @@ export default {
       );
 
       if (
-        !isMobile &&
         siteSettings.discourse_tag_intersection_navigator_make_intersection_homepage
       ) {
         setDefaultHomepage(intersectionRoute);
       }
 
       if (
-        !isMobile &&
         siteSettings.discourse_tag_intersection_navigator_add_community_link
       ) {
         api.addCommunitySectionLink((baseSectionLink) => {
