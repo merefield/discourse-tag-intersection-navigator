@@ -53,17 +53,24 @@ export default {
               const additionalTagNames = makeArray(this.additionalTags)
                 .map((tag) => tag?.name || tag)
                 .filter((tag) => tag !== allWord);
-              const visibleMainTag = mainTagName === allWord ? null : mainTagName;
+              const visibleMainTag =
+                mainTagName === allWord ? null : mainTagName;
 
-              this.set("value", makeArray(visibleMainTag).concat(additionalTagNames));
+              this.set(
+                "value",
+                makeArray(visibleMainTag).concat(additionalTagNames)
+              );
             }
 
             @action
             onChange(tags) {
-              const tagNames = tags.map((tag) => tag?.name || tag).filter(Boolean);
+              const tagNames = tags
+                .map((tag) => tag?.name || tag)
+                .filter(Boolean);
               const normalized = [...tagNames];
               const filter =
-                this.router.currentRoute.queryParams?.int_filter || this.navMode;
+                this.router.currentRoute.queryParams?.int_filter ||
+                this.navMode;
 
               while (normalized.length < 2) {
                 normalized.push(allWord);
@@ -151,7 +158,8 @@ export default {
                 const additionalTagPath =
                   this.router.currentRoute.params.additional_tags || allWord;
                 const filter =
-                  this.router.currentRoute.queryParams?.int_filter || this.navMode;
+                  this.router.currentRoute.queryParams?.int_filter ||
+                  this.navMode;
 
                 let route = this.getTagIntersectionUrl(
                   category?.slug,
@@ -180,11 +188,15 @@ export default {
           }
       );
 
-      if (siteSettings.discourse_tag_intersection_navigator_make_intersection_homepage) {
+      if (
+        siteSettings.discourse_tag_intersection_navigator_make_intersection_homepage
+      ) {
         setDefaultHomepage(intersectionRoute);
       }
 
-      if (siteSettings.discourse_tag_intersection_navigator_add_community_link) {
+      if (
+        siteSettings.discourse_tag_intersection_navigator_add_community_link
+      ) {
         api.addCommunitySectionLink((baseSectionLink) => {
           return class CustomSectionLink extends baseSectionLink {
             get name() {
