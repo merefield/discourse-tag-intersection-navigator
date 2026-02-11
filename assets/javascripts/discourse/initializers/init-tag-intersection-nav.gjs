@@ -1,23 +1,14 @@
 import { action, set } from "@ember/object";
 import { service } from "@ember/service";
 import { addDiscoveryQueryParam } from "discourse/controllers/discovery/list";
-import { filterTypeForMode } from "discourse/lib/filter-mode";
 import getURL from "discourse/lib/get-url";
 import { makeArray } from "discourse/lib/helpers";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import PreloadStore from "discourse/lib/preload-store";
 import DiscourseURL from "discourse/lib/url";
-import { escapeExpression, setDefaultHomepage } from "discourse/lib/utilities";
+import { setDefaultHomepage } from "discourse/lib/utilities";
 import Category from "discourse/models/category";
-import PermissionType from "discourse/models/permission-type";
-import {
-  filterQueryParams,
-  findTopicList,
-} from "discourse/routes/build-topic-route";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 
-const NONE = "none";
-const ALL = "all";
 const NO_CATEGORIES_ID = "no-categories";
 const ALL_CATEGORIES_ID = "all-categories";
 
@@ -26,12 +17,10 @@ export default {
 
   initialize(container) {
     const siteSettings = container.lookup("service:site-settings");
-    const capabilities = container.lookup("service:capabilities");
-    const isMobile = !capabilities.viewport.sm;
     const allWord = siteSettings.discourse_tag_intersection_navigator_all_word;
     const intersectionRoute = `tags/intersection/${allWord}/${allWord}`;
 
-    withPluginApi("1.39.0", (api) => {
+    withPluginApi((api) => {
       api.modifyClass(
         "component:tags-intersection-chooser",
         (Superclass) =>
@@ -39,7 +28,10 @@ export default {
             @service router;
 
             getTagIntersectionUrl(category, tag_1, tag_2, filter) {
-              let url = `/tags/intersection/${tag_1}/${tag_2}`;
+              const additionalTagPath = Array.isArray(tag_2)
+                ? tag_2.join("/")
+                : String(tag_2 || "");
+              let url = `/tags/intersection/${tag_1}/${additionalTagPath}`;
               let params = [];
 
               if (filter) {
@@ -57,35 +49,31 @@ export default {
             didReceiveAttrs() {
               super.didReceiveAttrs(...arguments);
 
-              if (this.mainTag === allWord) {
-                this.mainTag = null;
-              }
+              const mainTagName = this.mainTag?.name || this.mainTag;
+              const additionalTagNames = makeArray(this.additionalTags)
+                .map((tag) => tag?.name || tag)
+                .filter((tag) => tag !== allWord);
+              const visibleMainTag = mainTagName === allWord ? null : mainTagName;
 
-              this.additionalTags = this.additionalTags?.filter(
-                (tag) => tag !== allWord
-              );
-
-              this.set(
-                "value",
-                makeArray(this.mainTag).concat(makeArray(this.additionalTags))
-              );
+              this.set("value", makeArray(visibleMainTag).concat(additionalTagNames));
             }
 
             @action
             onChange(tags) {
-              if (tags.length < 1) {
-                tags.push(allWord);
-                tags.push(allWord);
-              }
-              if (tags.length < 2) {
-                tags.push(allWord);
+              const tagNames = tags.map((tag) => tag?.name || tag).filter(Boolean);
+              const normalized = [...tagNames];
+              const filter =
+                this.router.currentRoute.queryParams?.int_filter || this.navMode;
+
+              while (normalized.length < 2) {
+                normalized.push(allWord);
               }
 
               let route = this.getTagIntersectionUrl(
                 this.router.currentRoute.queryParams.category,
-                tags[0],
-                tags.slice(1),
-                this.navMode
+                normalized[0],
+                normalized.slice(1),
+                filter
               );
               DiscourseURL.routeToUrl(route);
             }
@@ -103,7 +91,9 @@ export default {
               set(
                 this.model,
                 "tags",
-                this.model.tags.filter((tag) => tag !== allWord)
+                (this.model.tags || [])
+                  .map((tag) => tag?.name || tag)
+                  .filter((tag) => tag !== allWord)
               );
             }
           }
@@ -131,6 +121,7 @@ export default {
               }
               return [];
             };
+
             getTagIntersectionUrl(category, tag_1, tag_2, filter) {
               let url = `/tags/intersection/${tag_1}/${tag_2}`;
               let params = [];
@@ -156,151 +147,23 @@ export default {
                   : Category.findById(parseInt(categoryId, 10));
 
               if (this.router.currentRouteName === "tags.intersection") {
+                const mainTagName = this.tag?.name || this.tag || allWord;
+                const additionalTagPath =
+                  this.router.currentRoute.params.additional_tags || allWord;
+                const filter =
+                  this.router.currentRoute.queryParams?.int_filter || this.navMode;
+
                 let route = this.getTagIntersectionUrl(
-                  category.slug,
-                  this.tagId,
-                  this.router.currentRoute.params.additional_tags,
-                  this.navMode
+                  category?.slug,
+                  mainTagName,
+                  additionalTagPath,
+                  filter
                 );
                 DiscourseURL.routeToUrl(route);
                 this.router.refresh();
               } else {
                 super.onChange(categoryId);
               }
-            }
-          }
-      );
-
-      api.modifyClass(
-        "route:tag.show",
-        (Superclass) =>
-          class extends Superclass {
-            async model(params, transition) {
-              const tagIdFromParams = escapeExpression(params.tag_id);
-              let tag;
-              if (tagIdFromParams !== NONE) {
-                tag = this.store.createRecord("tag", {
-                  id: tagIdFromParams,
-                });
-              } else {
-                tag = this.store.createRecord("tag", {
-                  id: NONE,
-                });
-              }
-
-              if (tag.id !== tagIdFromParams) {
-                tag.set("id", tagIdFromParams);
-              }
-
-              let additionalTags;
-
-              if (params.additional_tags) {
-                additionalTags = params.additional_tags.split("/").map((t) => {
-                  return this.store.createRecord("tag", {
-                    id: escapeExpression(t),
-                  }).id;
-                });
-              }
-
-              const filterType = filterTypeForMode(this.navMode);
-
-              let tagNotification;
-              if (
-                tag &&
-                tag.id !== NONE &&
-                this.currentUser &&
-                !additionalTags
-              ) {
-                // If logged in, we should get the tag's user settings
-                tagNotification = await this.store.find(
-                  "tagNotification",
-                  tag.id.toLowerCase()
-                );
-              }
-
-              let category = params.category_slug_path_with_id
-                ? Category.findBySlugPathWithID(
-                    params.category_slug_path_with_id
-                  )
-                : null;
-              const filteredQueryParams = filterQueryParams(
-                transition.to.queryParams,
-                {}
-              );
-              const topicFilter = this.navMode;
-              const tagId = tag ? tag.id.toLowerCase() : NONE;
-              let filter;
-
-              if (category) {
-                category.setupGroupsAndPermissions();
-                filter = `tags/c/${Category.slugFor(category)}/${category.id}`;
-
-                if (this.noSubcategories !== undefined) {
-                  filter += this.noSubcategories ? `/${NONE}` : `/${ALL}`;
-                }
-
-                filter += `/${tagId}/l/${topicFilter}`;
-              } else if (additionalTags) {
-                filter = `tags/intersection/${tagId}/${additionalTags.join(
-                  "/"
-                )}`;
-
-                if (transition.to.queryParams["category"]) {
-                  filteredQueryParams["category"] =
-                    transition.to.queryParams["category"];
-                  category = Category.findBySlugPathWithID(
-                    transition.to.queryParams["category"]
-                  );
-                }
-              } else {
-                filter = `tag/${tagId}/l/${topicFilter}`;
-              }
-
-              if (
-                this.noSubcategories === undefined &&
-                category?.default_list_filter === "none" &&
-                topicFilter === "latest"
-              ) {
-                // TODO: avoid throwing away preload data by redirecting on the server
-                PreloadStore.getAndRemove("topic_list");
-                return this.router.replaceWith(
-                  "tags.showCategoryNone",
-                  params.category_slug_path_with_id,
-                  tagId
-                );
-              }
-
-              const list = await findTopicList(
-                this.store,
-                this.topicTrackingState,
-                filter,
-                filteredQueryParams,
-                {
-                  cached: this.historyStore.isPoppedState,
-                }
-              );
-
-              if (list.topic_list.tags && list.topic_list.tags.length === 1) {
-                // Update name of tag (case might be different)
-                tag.setProperties({
-                  id: list.topic_list.tags[0].name,
-                  staff: list.topic_list.tags[0].staff,
-                });
-              }
-
-              return {
-                tag,
-                category,
-                list,
-                additionalTags,
-                filterType,
-                tagNotification,
-                canCreateTopic: list.can_create_topic,
-                canCreateTopicOnCategory:
-                  category?.permission === PermissionType.FULL,
-                canCreateTopicOnTag: !tag.staff || this.currentUser?.staff,
-                noSubcategories: this.noSubcategories,
-              };
             }
           }
       );
@@ -317,17 +180,11 @@ export default {
           }
       );
 
-      if (
-        !isMobile &&
-        siteSettings.discourse_tag_intersection_navigator_make_intersection_homepage
-      ) {
+      if (siteSettings.discourse_tag_intersection_navigator_make_intersection_homepage) {
         setDefaultHomepage(intersectionRoute);
       }
 
-      if (
-        !isMobile &&
-        siteSettings.discourse_tag_intersection_navigator_add_community_link
-      ) {
+      if (siteSettings.discourse_tag_intersection_navigator_add_community_link) {
         api.addCommunitySectionLink((baseSectionLink) => {
           return class CustomSectionLink extends baseSectionLink {
             get name() {
@@ -343,11 +200,11 @@ export default {
             }
 
             get title() {
-              return I18n.t("tag_intersection_navigator.link.title");
+              return i18n("tag_intersection_navigator.link.title");
             }
 
             get text() {
-              return I18n.t("tag_intersection_navigator.link.text");
+              return i18n("tag_intersection_navigator.link.text");
             }
           };
         });

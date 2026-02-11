@@ -1,33 +1,33 @@
 # discourse-tag-intersection-navigator
 
-A Discourse plugin that overhauls the Tag Intersections experience and makes it work with zero, one or more tags and different filters whilst giving you the option to make the interface your homepage
+A Discourse plugin that enhances the Tag Intersections experience by supporting zero, one, or many tags in a single interface, with optional filter navigation and navigation integrations.
 
 ### Features
 
 Enhances the existing Tag Intersections capability to:
 
-* Allow it to be empty or used with just one tag
-  * This makes for a more user friendly and flexible user experience, allowing you to drill in and out of a combination of tags
-* Support for different filters instead of just Latest.
-* Provide a way to make it the default on your desktop Homepage
+* Allow empty intersections and single-tag intersections.
+* Support different list filters (not only Latest).
+* Make intersections the default desktop homepage (optional).
+* Add a community link to the sidebar/header dropdown (optional).
 
 ### Important
 
-:warning: you must *not* use the word "everything" as a tag on your instance (or whatever is in the corresponding setting). :warning:
+Do not use the configured "everything" word as a real tag on your site.
 
 ### Settings
 
-Three are just four settings:
+There are four settings:
 
-* to enable the plugin
-* determine which string is used to describe "everything" in the routing - I advise you don't change this, but you can experiment with alternative options.  You _must_ avoid using the same string as a tag
-* to make the interface the Homepage for desktop (default OFF)
-* include a community link in sidebar/header dropdown (default ON)
+* Enable the plugin.
+* Configure the routing placeholder string used to mean "everything".
+* Make the interface the desktop homepage (default: OFF).
+* Include a community link in sidebar/header dropdown (default: ON).
 
-### Limitations/A Roadmap?
+### Limitations / Roadmap
 
-* It is relatively new and experimental, you may find issues.
-* The interface is not offered on mobile.
-* Like core intersections, does not work with a combo of Category - but this continues to fall back to the Category/Tag interface.
-* There are no Topic counts on the navigation tabs and their visibility/availability is presently not determined by availability of the corresponding topic list population count.
-* Not all filters are available.
+* Category + intersection fallback to Category/Tag is implemented.
+* Sub-categories are not yet supported.
+* Navigation tabs do not include topic counts, and visibility is not yet driven by result availability.
+* Filter availability/ordering does not yet follow site filter configuration.
+* Mobile behavior follows core navigation layout constraints and may differ from desktop.

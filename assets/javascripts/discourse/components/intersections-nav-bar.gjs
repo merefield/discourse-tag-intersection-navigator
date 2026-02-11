@@ -5,22 +5,22 @@ import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
-import { eq } from "truth-helpers";
-import I18n from "discourse-i18n";
+import { eq } from "discourse/truth-helpers";
+import { i18n } from "discourse-i18n";
 
 const filters = [
-  I18n.t("filters.latest.title"),
-  I18n.t("filters.top.title"),
-  I18n.t("filters.hot.title"),
-  I18n.t("filters.new.title"),
-  I18n.t("filters.unread.title"),
-  I18n.t("filters.unseen.title"),
+  i18n("filters.latest.title"),
+  i18n("filters.top.title"),
+  i18n("filters.hot.title"),
+  i18n("filters.new.title"),
+  i18n("filters.unread.title"),
+  i18n("filters.unseen.title"),
 ];
 
 const filters_anon = [
-  I18n.t("filters.latest.title"),
-  I18n.t("filters.top.title"),
-  I18n.t("filters.hot.title"),
+  i18n("filters.latest.title"),
+  i18n("filters.top.title"),
+  i18n("filters.hot.title"),
 ];
 
 export default class IntersectionNavBarComponent extends Component {
@@ -68,10 +68,15 @@ export default class IntersectionNavBarComponent extends Component {
 
     this.discoveryController.set("int_filter", filter.toLowerCase());
 
+    const tagName = this.args.tag?.name || this.args.tag;
+    const additionalTagNames = (this.args.additionalTags || []).map(
+      (tag) => tag?.name || tag
+    );
+
     this.router.transitionTo(
       "tags.intersection",
-      this.args.tagId,
-      this.args.additionalTagIds.join("/"),
+      tagName,
+      additionalTagNames.join("/"),
       {
         queryParams: { int_filter: filter.toLowerCase() },
       }
