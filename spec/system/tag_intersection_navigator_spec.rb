@@ -1,13 +1,16 @@
 # frozen_string_literal: true
 
-require_relative '../plugin_helper'
+require_relative "../plugin_helper"
 
 RSpec.describe "Tag Intersection Navigator" do
   let(:discovery) { PageObjects::Pages::Discovery.new }
-  let(:intersection_chooser) { PageObjects::Components::SelectKit.new(".tags-intersection-chooser") }
+  let(:intersection_chooser) do
+    PageObjects::Components::SelectKit.new(".tags-intersection-chooser")
+  end
+  let(:intersections_nav_bar) { PageObjects::Components::IntersectionsNavBar.new }
   fab!(:user)
   fab!(:tag_1) { Fabricate(:tag, name: "test-tag1") }
-  fab!(:tag_2) { Fabricate(:tag,  name: "test-tag2") }
+  fab!(:tag_2) { Fabricate(:tag, name: "test-tag2") }
   fab!(:tag_3) { Fabricate(:tag, name: "test-tag3") }
   fab!(:category)
   fab!(:topic)
@@ -62,7 +65,9 @@ RSpec.describe "Tag Intersection Navigator" do
       visit("/tags/intersection/bananas/bananas?category=#{category.id}")
       expect(page).to have_css(".tags-intersection-chooser")
       visit("/tags/intersection/test-tag1/test-tag2?category=#{category.id}")
-      expect(page).to have_current_path("/tags/intersection/test-tag1/test-tag2?category=#{category.id}")
+      expect(page).to have_current_path(
+        "/tags/intersection/test-tag1/test-tag2?category=#{category.id}",
+      )
       expect(discovery.topic_list).to have_topic(topic_2)
       expect(discovery.topic_list).to have_topics(count: 1)
     end
@@ -70,11 +75,17 @@ RSpec.describe "Tag Intersection Navigator" do
     it "switches filters using int_filter query param from the nav tabs" do
       visit("/tags/intersection/test-tag1/test-tag2")
 
-      click_button("Top")
-      expect(page).to have_current_path("/tags/intersection/test-tag1/test-tag2?int_filter=top")
+      expect(intersections_nav_bar).to be_visible
+      expect(intersections_nav_bar).to have_filter("Top")
+      expect(intersections_nav_bar).to have_active_filter("Latest")
 
-      click_button("Latest")
+      intersections_nav_bar.click_filter("Top")
+      expect(page).to have_current_path("/tags/intersection/test-tag1/test-tag2?int_filter=top")
+      expect(intersections_nav_bar).to have_active_filter("Top")
+
+      intersections_nav_bar.click_filter("Latest")
       expect(page).to have_current_path("/tags/intersection/test-tag1/test-tag2?int_filter=latest")
+      expect(intersections_nav_bar).to have_active_filter("Latest")
     end
 
     it "allows moving between two, one, and zero tags using the chooser" do
