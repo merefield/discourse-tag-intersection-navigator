@@ -21,6 +21,13 @@ RSpec.describe "Tag Intersection Navigator" do
     SiteSetting.discourse_tag_intersection_navigator_all_word = "bananas"
   end
 
+  def publish_new_topic(tags:, category: nil)
+    new_topic = Fabricate(:topic, tags: tags, category: category)
+    Fabricate(:post, topic: new_topic)
+    TopicTrackingState.publish_new(new_topic)
+    new_topic
+  end
+
   describe "topic list results" do
     it "keeps all_word/all_word on the intersection route as an empty selection" do
       visit("/tags/intersection/bananas/bananas")
@@ -106,6 +113,27 @@ RSpec.describe "Tag Intersection Navigator" do
       expand_chooser.call
       intersection_chooser.select_row_by_name("test-tag2")
       expect(page).to have_current_path("/tags/intersection/test-tag1/test-tag2?int_filter=top")
+    end
+
+    it "shows incoming count only for topics in the current intersection scope" do
+      sign_in(user)
+      visit("/tags/intersection/test-tag1/test-tag2?category=#{category.id}")
+
+      expect(discovery.topic_list).to have_topics(count: 1)
+
+      out_of_scope_tag_topic = publish_new_topic(tags: [tag_1], category: category)
+      out_of_scope_category_topic = publish_new_topic(tags: [tag_1, tag_2])
+      in_scope_topic = publish_new_topic(tags: [tag_1, tag_2], category: category)
+
+      try_until_success(reason: "relies on MessageBus updates") do
+        expect(page).to have_css(".show-more", text: /1.*new/)
+      end
+
+      find(".show-more").click
+
+      expect(discovery.topic_list).to have_topic(in_scope_topic)
+      expect(discovery.topic_list).to have_no_topic(out_of_scope_tag_topic)
+      expect(discovery.topic_list).to have_no_topic(out_of_scope_category_topic)
     end
   end
 end
