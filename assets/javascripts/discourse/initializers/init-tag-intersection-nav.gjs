@@ -98,9 +98,9 @@ export default {
               set(
                 this.model,
                 "tags",
-                (this.model.tags || [])
-                  .map((tag) => tag?.name || tag)
-                  .filter((tag) => tag !== allWord)
+                (this.model.tags || []).filter(
+                  (tag) => (tag?.name || tag) !== allWord
+                )
               );
             }
           }
