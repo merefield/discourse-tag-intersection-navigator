@@ -70,7 +70,10 @@ export default {
           unreadRecipients.push("new");
         }
 
-        if (unreadRecipients.includes(filter) && data.message_type === "unread") {
+        if (
+          unreadRecipients.includes(filter) &&
+          data.message_type === "unread"
+        ) {
           const old = this.findState(data);
 
           if (!old || old.highest_post_number === old.last_read_post_number) {
