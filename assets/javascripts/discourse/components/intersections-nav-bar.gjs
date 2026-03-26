@@ -85,7 +85,7 @@ export default class IntersectionNavBarComponent extends Component {
 
   <template>
     {{#if this.shouldShow}}
-      <ul class="nav nav-pills">
+      <ul class="nav nav-pills tag-intersection-nav-bar">
         {{#each this.filters as |filter|}}
           <li class="filter-item">
             <button

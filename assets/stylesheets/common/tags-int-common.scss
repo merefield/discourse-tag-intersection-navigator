@@ -2,4 +2,8 @@ body.tags-intersection {
   .category-breadcrumb li summary[data-name="subcategories"] {
     display: none;
   }
+
+  ul.tag-intersection-nav-bar {
+    margin: 0 0.5rem;
+  }
 }
